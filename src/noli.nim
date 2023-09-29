@@ -1,16 +1,17 @@
 include std/parseopt
+import streams
+import vm/pu
+import util
 
 var toparse = ""
-
 for c in commandLineParams():
     toparse.add(c & " ")
-
-var parser = initOptParser(toparse)
 
 var compile = false
 var in_file = ""
 var out_file = ""
 
+var parser = initOptParser(toparse)
 while true:
     parser.next()
     case parser.kind
@@ -20,6 +21,8 @@ while true:
             case parser.key
             of "c": compile = true
             of "r": compile = false
+            of "debug": util.debugging = true
+            of "verbose": util.verbose = true
             of "in":
                 echo "Input flag without file passed"
                 quit -1
@@ -46,3 +49,17 @@ if compile and out_file == "":
 if in_file == "":
     echo "Usage:\n\tnoli -c --in:source.noli --out:output.nolic\n\tnoli -r --in:output.nolic"
     quit 0
+
+if compile == false:
+    if not fileExists(in_file):
+        echo "Invalid input file provided: ", in_file
+    var file = newFileStream(in_file)
+    var bytecode: seq[uint64] = @[]
+    while true:
+        try:
+            bytecode.add(file.readUint64())
+        except IOError as _:
+            break
+    var program = preprocess_bytecode(bytecode)
+    var pu = NoliPU()
+    pu.execute_bytecode(program)
