@@ -5,14 +5,13 @@ type NoliErrorType* = enum
     INVALID_MEMORY_ADDRESS,
     FAILED_TO_ACCESS_EXEC,
     NONE,
-    DO_NOT_SKIP,
     NOT_IMPLEMENTED,
 
 type NoliError* = object
-    kind: NoliErrorType
-    message: string
+    kind*: NoliErrorType
+    message*: string
 
-proc write*(err: var NoliError) =
+proc write*(err: NoliError) =
     echo "ERROR '", err.kind, "': ", err.message
 
 proc make_error*(kind: NoliErrorType, msg: string): NoliError =
@@ -24,7 +23,9 @@ proc make_error*(kind: NoliErrorType, msg: string): NoliError =
 proc no_error*(): NoliError =
     return make_error(NoliErrorType.NONE, "")
 
-proc check*(err: var NoliError) =
-    if err.kind != NoliErrorType.NONE:
-        err.write()
-        quit ord(err.kind)
+proc check_error*(val: (uint64, NoliError)): uint64 =
+    if val[1].kind != NoliErrorType.NONE:
+        val[1].write()
+        quit ord(val[1].kind)
+    return val[0]
+

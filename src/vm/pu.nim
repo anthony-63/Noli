@@ -1,21 +1,9 @@
-import mem
+import std/strformat
+
 import ../util
-
-type NoliPU* = object
-    scopes: seq[NoliMEM]
-    
-    p_stack: seq[uint64]
-    psp: uint64
-
-    xref_table: seq[uint64]
-
-    calling_func: bool
-    call_stack: seq[uint64]
-    call_ptr: uint64
-
-    ip: uint64
-
-    printing: bool
+import extra
+import exec
+import mem
 
 proc halt*(pu: var NoliPU) = 
     if debugging: echo "Halting!"
@@ -32,8 +20,14 @@ proc execute_bytecode*(pu: var NoliPU, bytecode: seq[NoliXREFED]) =
     
     if debugging: echo "Loading xref_table..."
     for b in bytecode:
-        pu.xref_table.add(b.code)
+        pu.xref_table.add(b.xref)
     
     if verbose: echo "Exec memory: ", pu.scopes[0].exec
     
+    while int(pu.ip) < pu.scopes[0].exec.len():
+        if verbose: echo fmt"Executing {pu.scopes[0].exec[pu.ip]} at address {pu.ip}"
+        NOLI_VM_CALL_TABLE[pu.scopes[0].exec[pu.ip]](pu)
+        if pu.interrupt == NoliInterrupts.NONE:
+            pu.ip += 1
+        elif pu.interrupt == NoliInterrupts.DONT_INC: discard
     pu.halt()

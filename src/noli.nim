@@ -1,5 +1,6 @@
 include std/parseopt
 import streams
+import vm/extra
 import vm/pu
 import util
 

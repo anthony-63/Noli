@@ -7,12 +7,6 @@ type NoliXREFED* = object
 var debugging* = false
 var verbose* = false
 
-proc debug_print*(toprint: varargs[string]) =
-    if debugging: echo toprint
-
-proc verbose_print*(toprint: varargs[string]) =
-    if verbose: echo toprint
-
 proc preprocess_bytecode*(bytecode: seq[uint64]): seq[NoliXREFED] =
     var ops: seq[NoliXREFED]
     var next = false
