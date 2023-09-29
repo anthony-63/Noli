@@ -1,0 +1,37 @@
+; add 3 to top of preserved stack
+func
+ppop 0
+movereg 3 1
+add 0 1
+pop 0
+ppushreg 0
+ret
+end
+
+; add 2 to top of preserved stack
+func
+ppop 0
+movereg 2 1
+add 0 1
+pop 0
+ppushreg 0
+call 0
+ret
+end
+
+; add 1 + 1 then push it to preserved stack
+movereg 1 0
+movereg 1 1
+add 0 1
+pop 0
+ppushreg 0
+call f
+ppop 0
+push 0
+push 1
+native
+moveheap 1 0
+moveheap a 1
+push 0
+push 0
+native
