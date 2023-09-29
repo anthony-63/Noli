@@ -11,3 +11,6 @@ bin           = @["noli"]
 # Dependencies
 
 requires "nim >= 2.0.0"
+
+task linux, "Compile for linux":
+    exec("wsl -e bash -li -c \"nimble build\"")
