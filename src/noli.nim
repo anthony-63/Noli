@@ -21,8 +21,8 @@ while true:
             case parser.key
             of "c": compile = true
             of "r": compile = false
-            of "debug": util.debugging = true
-            of "verbose": util.verbose = true
+            of "debug": debugging = true
+            of "verbose": verbose = true
             of "in":
                 echo "Input flag without file passed"
                 quit -1
