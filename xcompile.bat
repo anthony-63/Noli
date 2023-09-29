@@ -1,0 +1,1 @@
+wsl -d Ubuntu -u anya -e bash -li -c 'nimble build'
