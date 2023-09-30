@@ -1,4 +1,6 @@
-type TokenType* = enum
+import tables
+
+type NoliTokenType* = enum
     Number,
     Identifier,
     Equals,
@@ -7,6 +9,10 @@ type TokenType* = enum
     BinOp,
     Let,
 
-type Token* = object
-    value: string
-    kind: TokenType
+type NoliToken* = object
+    value*: string
+    kind*: NoliTokenType
+
+const NOLI_KEYWORDS*: Table[string, NoliTokenType] = {
+    "let": NoliTokenType.Let,
+}.toTable()

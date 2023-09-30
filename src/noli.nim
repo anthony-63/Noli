@@ -72,5 +72,6 @@ else:
     var file = open(in_file)
     defer: file.close()
 
-    let src = file.readAll()
-    lexer_tokenize(src)
+    var src = file.readAll()
+    var tokens = lexer_tokenize(src)
+    echo tokens
