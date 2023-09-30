@@ -4,6 +4,8 @@ import vm/extra
 import vm/pu
 import util
 
+import compiler/lexer
+
 var toparse = ""
 for c in commandLineParams():
     toparse.add(c & " ")
@@ -64,3 +66,11 @@ if compile == false:
     var program = preprocess_bytecode(bytecode)
     var pu = NoliPU()
     pu.execute_bytecode(program)
+else:
+    if not fileExists(in_file):
+        echo "Invalid input file provided: ", in_file
+    var file = open(in_file)
+    defer: file.close()
+
+    let src = file.readAll()
+    lexer_tokenize(src)

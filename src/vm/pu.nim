@@ -23,7 +23,7 @@ proc execute_bytecode*(pu: var NoliPU, bytecode: seq[NoliXREFED]) =
         pu.xref_table.add(b.xref)
     
     if verbose: echo "Exec memory: ", pu.scopes[0].exec
-    
+        
     while int(pu.ip) < pu.scopes[0].exec.len():
         if verbose: echo fmt"Executing {pu.scopes[0].exec[pu.ip]} at address {pu.ip}"
         NOLI_VM_CALL_TABLE[pu.scopes[0].exec[pu.ip]](pu)
