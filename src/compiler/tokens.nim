@@ -8,6 +8,8 @@ type NoliTokenType* = enum
     CloseParen,
     BinOp,
     Let,
+    Eof,
+    Null,
 
 type NoliToken* = object
     value*: string
@@ -15,4 +17,5 @@ type NoliToken* = object
 
 const NOLI_KEYWORDS*: Table[string, NoliTokenType] = {
     "let": NoliTokenType.Let,
+    "null": NoliTokenType.Null,
 }.toTable()

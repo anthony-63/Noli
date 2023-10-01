@@ -1,6 +1,6 @@
 import mem
 import ../util
-import std/strformat
+import strformat
 import err
 
 type NoliInterrupts* = enum

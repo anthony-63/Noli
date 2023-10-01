@@ -1,10 +1,15 @@
-include std/parseopt
+
+include parseopt
+import strformat
 import streams
-import vm/extra
-import vm/pu
+
 import util
 
+import vm/extra
+import vm/pu
+
 import compiler/lexer
+import compiler/ast
 
 var toparse = ""
 for c in commandLineParams():
@@ -74,4 +79,6 @@ else:
 
     var src = file.readAll()
     var tokens = lexer_tokenize(src)
-    echo tokens
+    if verbose: echo fmt"Generated tokens: {tokens}"
+    var ast = generate_ast(tokens)
+    echo repr(ast)

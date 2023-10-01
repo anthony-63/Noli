@@ -1,8 +1,8 @@
 import tokens
-import std/deques
-import std/strformat
-import std/strutils
-import std/tables
+import deques
+import strformat
+import strutils
+import tables
 
 proc isalpha(c: char): bool =
     return fmt"{c}".toUpper() != fmt"{c}".toLower()
@@ -22,7 +22,7 @@ proc lexer_tokenize*(src_string: string): seq[NoliToken] =
             toks.add(NoliToken(kind: NoliTokenType.OpenParen, value: fmt"{src.popFirst()}"))
         elif src[0] == ')':
             toks.add(NoliToken(kind: NoliTokenType.CloseParen, value: fmt"{src.popFirst()}"))
-        elif src[0] in ['+', '-', '*', '/']:
+        elif src[0] in ['+', '-', '*', '/', '%']:
             toks.add(NoliToken(kind: NoliTokenType.BinOp, value: fmt"{src.popFirst()}"))
         elif src[0] == '=':
             toks.add(NoliToken(kind: NoliTokenType.Equals, value: fmt"{src.popFirst()}"))
@@ -49,4 +49,7 @@ proc lexer_tokenize*(src_string: string): seq[NoliToken] =
             else:
                 echo "Unrecognized character found: ", src[0]
                 quit -1
+    
+    toks.add(NoliToken(kind: NoliTokenType.Eof, value: "EndOfFile"))
+    
     return toks

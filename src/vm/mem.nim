@@ -1,6 +1,6 @@
 import err
 import ../util
-import std/strformat
+import strformat
 
 type NoliMEM* = object
     exec*: seq[uint64]

@@ -1,4 +1,4 @@
-import std/strformat
+import strformat
 
 import ../util
 import extra

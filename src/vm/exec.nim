@@ -1,6 +1,6 @@
 import extra
 import err
-import std/strformat
+import strformat
 import system
 import ../util
 import mem
