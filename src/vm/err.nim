@@ -28,4 +28,3 @@ proc check_error*(val: (uint64, NoliError)): uint64 =
         val[1].write()
         quit ord(val[1].kind)
     return val[0]
-
