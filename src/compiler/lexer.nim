@@ -26,6 +26,15 @@ proc lexer_tokenize*(src_string: string): seq[NoliToken] =
             toks.add(NoliToken(kind: NoliTokenType.BinOp, value: fmt"{src.popFirst()}"))
         elif src[0] == '=':
             toks.add(NoliToken(kind: NoliTokenType.Equals, value: fmt"{src.popFirst()}"))
+        elif src[0] == '"':
+            discard src.popFirst()
+            var str = ""
+            while src.len() > 0 and src[0] != '"':
+                str = str & fmt"{src.popFirst()}"
+            discard src.popFirst()
+            toks.add(NoliToken(kind: NoliTokenType.String, value: str))
+        elif src[0] == ',':
+            toks.add(NoliToken(kind: NoliTokenType.Comma, value: fmt"{src.popFirst()}"))
         else:
             # build num token
             if isint(src[0]):
@@ -41,11 +50,12 @@ proc lexer_tokenize*(src_string: string): seq[NoliToken] =
 
                 if NOLI_KEYWORDS.hasKey(ident):
                     toks.add(NoliToken(kind: NOLI_KEYWORDS[ident], value: ident))
+                elif NOLI_NATIVE_FUNCTIONS.hasKey(ident):
+                    toks.add(NoliToken(kind: NOLI_NATIVE_FUNCTIONS[ident], value: ident))
                 else:
                     toks.add(NoliToken(kind: NoliTokenType.Identifier, value: ident))
             elif isskippable(src[0]):
                 discard src.popFirst()
-            
             else:
                 echo "Unrecognized character found: ", src[0]
                 quit -1

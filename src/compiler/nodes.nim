@@ -4,7 +4,10 @@ type
         NumericLit,
         Identifier,
         BinaryExpr,
+        VariableDecl,
+        StringLit,
         NullLit,
+        NativeCall,
     NoliNode* = ref object
         case kind*: NoliNodeKind
         of Program:
@@ -15,6 +18,15 @@ type
             op*: string
         of Identifier:
             symbol*: string
+        of VariableDecl:
+            ident*: string
+            var_value*: NoliNode
+            var_type*: string
         of NumericLit:
-            value*: float
+            num_value*: float
+        of StringLit:
+            str_value*: string
         of NullLit: discard
+        of NativeCall:
+            name*: string
+            args*: seq[NoliNode]

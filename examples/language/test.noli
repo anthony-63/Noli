@@ -1,1 +1,2 @@
-null
+let test num = 1
+print(test)

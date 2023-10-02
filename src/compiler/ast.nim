@@ -18,12 +18,13 @@ proc expect(parser: var NoliParser, kind: NoliTokenType, err: string): NoliToken
     return prev
 
 proc parse_expr(parser: var NoliParser): NoliNode
+proc parse_func_args(parser: var NoliParser): seq[NoliNode]
 
 proc parse_primary_expr(parser: var NoliParser): NoliNode =
     var t = parser.tokens[0].kind
     case t:
     of Identifier: return NoliNode(kind: NoliNodeKind.Identifier, symbol: parser.eat().value)
-    of Number: return NoliNode(kind: NoliNodeKind.NumericLit, value: parseFloat(parser.eat().value))
+    of Number: return NoliNode(kind: NoliNodeKind.NumericLit, num_value: parseFloat(parser.eat().value))
     of Null:
         discard parser.eat()
         return NoliNode(kind: NoliNodeKind.NullLit)
@@ -32,10 +33,25 @@ proc parse_primary_expr(parser: var NoliParser): NoliNode =
         var val = parser.parse_expr()
         discard parser.expect(NoliTokenType.CloseParen, "Expected closing paren")
         return val
+    of Let:
+        discard parser.eat()
+        var ident = parser.expect(NoliTokentype.Identifier, "Expected identifier for variable declaration")
+        var typ = parser.expect(NoliTokentype.Type, "Expected type after identifier variable declaration")
+        discard parser.expect(NoliTokenType.Equals, "Expected equals after type for variable declaration")
+        var val: NoliNode
+        if typ.value == "string":
+            val = NoliNode(kind: NoliNodeKind.StringLit, str_value: parser.expect(NoliTokenType.String, "Expected string").value)
+        elif typ.value == "num":
+            val = parser.parse_expr()
+        return NoliNode(kind: NoliNodeKind.VariableDecl, var_type: typ.value, ident: ident.value, var_value: val)
+    of Native:
+        var name = parser.eat().value
+        var args = parser.parse_func_args()
+        return NoliNode(kind: NoliNodeKind.NativeCall, args: args, name: name)
     else:
         echo fmt"Unexpected token: {repr(parser.tokens[0])}"
         quit -1
-
+    
 proc parse_multiplicitave_expr(parser: var NoliParser): NoliNode =
     var left = parser.parse_primary_expr()
 
@@ -60,6 +76,12 @@ proc parse_expr(parser: var NoliParser): NoliNode =
 proc parse_stmt(parser: var NoliParser): NoliNode =
     return parser.parse_expr()
 
+proc parse_func_args(parser: var NoliParser): seq[NoliNode] = # TODO
+    var args: seq[NoliNode] = @[]
+    args.add(parser.parse_additive_expr())
+    while parser.tokens[0].kind == NoliTokenType.Comma:
+        args.add(parser.parse_additive_expr())
+    return args
 proc generate_ast*(tokens: seq[NoliToken]): NoliNode =
     var program = NoliNode(kind: Program, body: @[])
 
