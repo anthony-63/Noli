@@ -42,7 +42,6 @@ proc lexer_tokenize*(src_string: string): seq[NoliToken] =
                 while src.len() > 0 and isint(src[0]):
                     num = num & fmt"{src.popFirst()}"
                 toks.add(NoliToken(kind: NoliTokenType.Number, value: num))
-            
             elif isalpha(src[0]):
                 var ident = ""
                 while src.len() > 0 and (isalpha(src[0]) or isint(src[0])):

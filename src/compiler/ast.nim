@@ -22,6 +22,11 @@ proc expect(parser: var NoliParser, kind: NoliTokenType, err: string): NoliToken
 proc parse_expr(parser: var NoliParser): NoliNode
 proc parse_func_args(parser: var NoliParser): seq[NoliNode]
 
+proc parse_string(parser: var NoliParser): NoliNode =
+    var str_val = parser.expect(NoliTokenType.String, "Expected string").value
+    str_val = str_val.replace("\\r\\n", "\n").replace("\\n", "\n").replace("\\b", "\b").replace("\\t", "\t")
+    return NoliNode(kind: NoliNodeKind.StringLit, str_value: str_val)
+
 proc parse_primary_expr(parser: var NoliParser): NoliNode =
     var t = parser.tokens[0].kind
     case t:
@@ -42,7 +47,7 @@ proc parse_primary_expr(parser: var NoliParser): NoliNode =
         discard parser.expect(NoliTokenType.Equals, "Expected equals after type for variable declaration")
         var val: NoliNode
         if typ.value == "string":
-            val = NoliNode(kind: NoliNodeKind.StringLit, str_value: parser.expect(NoliTokenType.String, "Expected string").value)
+            val = parser.parse_string()
         elif typ.value == "num":
             val = parser.parse_expr()
         return NoliNode(kind: NoliNodeKind.VariableDecl, var_type: typ.value, ident: ident.value, var_value: val)
@@ -50,6 +55,8 @@ proc parse_primary_expr(parser: var NoliParser): NoliNode =
         var name = parser.eat().value
         var args = parser.parse_func_args()
         return NoliNode(kind: NoliNodeKind.NativeCall, native_args: args, native_name: name)
+    of String:
+        return parser.parse_string()
     else:
         echo fmt"Unexpected token: {repr(parser.tokens[0])}"
         quit -1

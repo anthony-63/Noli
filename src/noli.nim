@@ -92,3 +92,4 @@ else:
 
     let output_stream = openFileStream(out_file, FileMode.fmWrite)
     output_stream.writeData(bytecode[0].addr, sizeof(uint64) * bytecode.len)
+    if debugging: echo "Finished compiling ", in_file

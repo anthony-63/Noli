@@ -2,7 +2,7 @@ import extra
 import mem
 import err
 import ../util
-import std/strformat
+import strformat
 
 proc print_native(pu: var NoliPU) =
     var address = check_error(pu.scopes[pu.scope_idx].popstack())
