@@ -9,6 +9,23 @@ import ../ops
 
 template `?`(arg: untyped): untyped = check_error(arg)
 
+template genArithmeticOp(name, op: untyped): untyped =
+  proc name(pu: var NoliPu) =
+    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
+    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
+    pu.scopes[pu.scope_idx].pushstack(op(r1, r2))
+    pu.interrupt = NoliInterrupts.NONE
+
+template genBitwiseOp(name, op: untyped): untyped =
+  proc name(pu: var NoliPU) =
+    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
+    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
+    pu.scopes[pu.scope_idx].pushstack(uint64(op(r1, r2)))
+    pu.interrupt = NoliInterrupts.NONE
+
+template genComparisonOp(name, op: untyped): untyped =
+  genBitwiseOp(name, op) # These two are literally the same, we just want a different name.
+
 proc next(pu: var NoliPU): (uint64, NoliError) =
     pu.ip += 1
    
@@ -90,23 +107,9 @@ proc ret(pu: var NoliPU) =
     pu.ip = pu.call_stack.pop()
     pu.interrupt = NoliInterrupts.NONE
 
-proc add(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(r1 + r2)
-    pu.interrupt = NoliInterrupts.NONE
-
-proc sub(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(r1 - r2)
-    pu.interrupt = NoliInterrupts.NONE
-
-proc mul(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(r1 * r2)
-    pu.interrupt = NoliInterrupts.NONE
+genArithmeticOp(add, `+`)
+genArithmeticOp(sub, `-`)
+genArithmeticOp(mul, `*`)
 
 proc div_noli(pu: var NoliPU) =
     var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
@@ -127,23 +130,9 @@ proc dec(pu: var NoliPU) =
     pu.scopes[pu.scope_idx].setreg(?(pu.scopes[pu.scope_idx].getreg(reg)) - 1, reg)
     pu.interrupt = NoliInterrupts.NONE
 
-proc bitwiseor(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 or r2))
-    pu.interrupt = NoliInterrupts.NONE
-
-proc bitwiseand(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 and r2))
-    pu.interrupt = NoliInterrupts.NONE
-
-proc bitwisexor(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 xor r2))
-    pu.interrupt = NoliInterrupts.NONE
+genBitwiseOp(bitwiseor, `or`)
+genBitwiseOp(bitwiseand, `and`)
+genBitwiseOp(bitwisexor, `xor`)
 
 proc bitwisenot(pu: var NoliPU) =
     var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
@@ -167,40 +156,12 @@ proc logicalnot(pu: var NoliPU) =
     pu.scopes[pu.scope_idx].pushstack(uint64(not bool(r1)))
     pu.interrupt = NoliInterrupts.NONE
 
-proc eq(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 == r2))
-    pu.interrupt = NoliInterrupts.NONE
-
-proc neq(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 != r2))
-    pu.interrupt = NoliInterrupts.NONE
-
-proc gt(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 > r2))
-    pu.interrupt = NoliInterrupts.NONE
-
-proc lt(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 < r2))
-
-proc gteq(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 >= r2))
-    pu.interrupt = NoliInterrupts.NONE
-
-proc lteg(pu: var NoliPU) =
-    var r1 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    var r2 = ?(pu.scopes[pu.scope_idx].getreg(?(pu.next())))
-    pu.scopes[pu.scope_idx].pushstack(uint64(r1 <= r2))
-    pu.interrupt = NoliInterrupts.NONE
+genComparisonOp(eq, `==`)
+genComparisonOp(neq, `!=`)
+genComparisonOp(gt, `>`)
+genComparisonOp(lt, `<`)
+genComparisonOp(gteq, `>=`)
+genComparisonOp(lteq, `<=`)
 
 proc call(pu: var NoliPU) =
     pu.calling_func = true
@@ -300,7 +261,7 @@ const NOLI_VM_CALL_TABLE*: seq[CallTableEntry] = @[
     gt,
     lt,
     gteq,
-    lteg,
+    lteq,
     call,
     func_noli,
     end_noli,
