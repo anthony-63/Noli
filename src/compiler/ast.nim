@@ -3,6 +3,8 @@ import tokens
 import deques
 import strutils
 import strformat
+import sequtils
+import ../util
 
 type NoliParser = object
     tokens: Deque[NoliToken]
@@ -47,7 +49,7 @@ proc parse_primary_expr(parser: var NoliParser): NoliNode =
     of Native:
         var name = parser.eat().value
         var args = parser.parse_func_args()
-        return NoliNode(kind: NoliNodeKind.NativeCall, args: args, name: name)
+        return NoliNode(kind: NoliNodeKind.NativeCall, native_args: args, native_name: name)
     else:
         echo fmt"Unexpected token: {repr(parser.tokens[0])}"
         quit -1
@@ -88,6 +90,8 @@ proc generate_ast*(tokens: seq[NoliToken]): NoliNode =
     var parser = NoliParser(tokens: tokens.toDeque)
 
     while parser.tokens[0].kind != NoliTokenType.Eof:
+        if verbose: echo "Current AST: ", repr(program)
+        if verbose: echo "Current TOKENS: ", repr(parser.tokens.toSeq)
         program.body.add(parser.parse_stmt())
 
     return program

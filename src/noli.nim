@@ -10,6 +10,7 @@ import vm/pu
 
 import compiler/lexer
 import compiler/ast
+import compiler/generator
 
 var toparse = ""
 for c in commandLineParams():
@@ -77,8 +78,17 @@ else:
     var file = open(in_file)
     defer: file.close()
 
+    if fileExists(out_file):
+        removeFile(out_file)
+
     var src = file.readAll()
     var tokens = lexer_tokenize(src)
     if verbose: echo fmt"Generated tokens: {tokens}"
     var ast = generate_ast(tokens)
-    echo repr(ast)
+    if verbose: echo repr(ast)
+
+    var bytecode = generate_bytecode(ast)
+    if verbose: echo repr(bytecode)
+
+    let output_stream = openFileStream(out_file, FileMode.fmWrite)
+    output_stream.writeData(bytecode[0].addr, sizeof(uint64) * bytecode.len)

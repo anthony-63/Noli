@@ -1,2 +1,2 @@
-let test num = 1
-print(test)
+let hi string = "test"
+print(1)

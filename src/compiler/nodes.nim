@@ -28,5 +28,5 @@ type
             str_value*: string
         of NullLit: discard
         of NativeCall:
-            name*: string
-            args*: seq[NoliNode]
+            native_name*: string
+            native_args*: seq[NoliNode]

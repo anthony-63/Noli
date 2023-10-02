@@ -8,7 +8,7 @@ proc isalpha(c: char): bool =
     return fmt"{c}".toUpper() != fmt"{c}".toLower()
 
 proc isint(c: char): bool =
-    return c in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.']
+    return c in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
 proc isskippable(c: char): bool =
     return c in ['\n', ' ', '\t', '\r']
@@ -45,7 +45,7 @@ proc lexer_tokenize*(src_string: string): seq[NoliToken] =
             
             elif isalpha(src[0]):
                 var ident = ""
-                while src.len() > 0 and isalpha(src[0]):
+                while src.len() > 0 and (isalpha(src[0]) or isint(src[0])):
                     ident = ident & fmt"{src.popFirst()}"
 
                 if NOLI_KEYWORDS.hasKey(ident):
