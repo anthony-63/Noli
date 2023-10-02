@@ -10,7 +10,7 @@ type
         PPUSHREG, # push a register to the preserved stack                                 reg -> p_stack[psp++]
         PPOP, # pop top of preserved stack to a register                                   p_stack[--psp] -> reg
         MOVEHEAPTOREG, # move a value from the heap to a register                          [addr] -> reg
-        MOVEREGTOHEAP, # move a value from a register to a heap address                    reg -> [addr]
+        MOVEREGTOHEAP, # move a value from a register to a heap address                    reg -> [addr]src/ops.nim
         MOVEREGTOREG, # move a value from register to register                             reg1 -> reg2
         MOVEHEAPTOHEAP, # move a value from a heap address to another heap address         [addr1] -> [addr2]
         MOVEREGTOREF, # move a register to the heap address at the top of the stack        reg -> [stack[--sp]]

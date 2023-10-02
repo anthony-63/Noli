@@ -1,1 +1,4 @@
-print("Hello!")
+print("Hello!\n")
+
+let a string = "testing!\n"
+print(a)

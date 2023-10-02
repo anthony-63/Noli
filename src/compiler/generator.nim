@@ -19,7 +19,7 @@ proc store_string*(generator: var NoliGenerator, str: string, tmp: bool = true, 
     else: ident = identifier
 
     generator.variables[ident] = ("string", generator.variable_index) 
-    if debugging: echo "Declared variable: ", repr(generator.variables[ident]), ", ", ident
+    if debugging: echo "Declared variable: ", repr(generator.variables[ident]), ", ", ident, ", \"", str, "\""
     bytecode.add(ord(NOLI_OPCODES.MOVEREG))
     bytecode.add(generator.string_address_index)
     bytecode.add(generator.variable_index)
@@ -52,7 +52,7 @@ proc generate_bytecode*(ast: NoliNode): seq[uint64] =
             case node.var_type:
             of "num":
                 generator.variables[node.ident] = (node.var_type, generator.variable_index)
-                if debugging: echo "Declared variable: ", generator.variables[node.ident], ", ", node.ident
+                if debugging: echo "Declared variable: ", generator.variables[node.ident], ", ", node.ident, ", \"", repr(node.var_value), "\""
                 bytecode.add(ord(NOLI_OPCODES.MOVEREG))
                 bytecode.add(uint64(int(node.var_value.num_value)))
                 bytecode.add(generator.variable_index)
