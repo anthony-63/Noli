@@ -30,4 +30,5 @@ proc execute_bytecode*(pu: var NoliPU, bytecode: seq[NoliXREFED]) =
         if pu.interrupt == NoliInterrupts.NONE:
             pu.ip += 1
         elif pu.interrupt == NoliInterrupts.DONT_INC: discard
+        if verbose: echo fmt"Exec: {pu.scopes[0].exec}"
     pu.halt()

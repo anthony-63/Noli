@@ -5,7 +5,6 @@ import system
 import ../util
 import mem
 import native
-import ../ops
 
 template `?`(arg: untyped): untyped = check_error(arg)
 

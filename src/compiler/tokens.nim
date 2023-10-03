@@ -28,4 +28,5 @@ const NOLI_KEYWORDS*: Table[string, NoliTokenType] = {
 
 const NOLI_NATIVE_FUNCTIONS*: Table[string, NoliTokenType] = {
     "print": NoliTokenType.Native,
+    "print_number": NoliTokenType.Native,
 }.toTable()

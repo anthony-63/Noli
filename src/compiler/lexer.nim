@@ -5,7 +5,7 @@ import strutils
 import tables
 
 proc isalpha(c: char): bool =
-    return fmt"{c}".toUpper() != fmt"{c}".toLower()
+    return fmt"{c}".toUpper() != fmt"{c}".toLower() or c in ['_']
 
 proc isint(c: char): bool =
     return c in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']

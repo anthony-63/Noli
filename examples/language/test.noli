@@ -1,4 +1,4 @@
-print("Hello!\n")
-
-let a string = "testing!\n"
-print(a)
+let test num = 51
+print_number(32)
+print("\n")
+print_number(test)
